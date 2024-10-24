@@ -6,12 +6,15 @@
     <title>SerienFrei Beta</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Standard Favicon -->
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png" type="image/x-icon">
     
+    <!-- iOS Web App meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SerienFrei Beta">
     
+    <!-- iOS Web App icon -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png">
     
     <style>
@@ -153,6 +156,18 @@
             border-radius: 4px;
         }
         
+        .play-button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
         #player {
             position: fixed;
             top: 0;
@@ -201,15 +216,15 @@
     </style>
 </head>
 <body>
-<header>
-    <div class="header-content">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="#" class="logo" id="refreshLink">SerienFrei Beta</a>
-<a href="https://saulgau.github.io/Filme/" class="logo" style="font-size: 16px; background: var(--primary-color); padding: 8px 15px; border-radius: 20px; transition: opacity 0.3s; color: #ffffff;">FilmFrei</a>
+    <header>
+        <div class="header-content">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="#" class="logo" id="refreshLink">SerienFrei Beta</a>
+                <a href="https://saulgau.github.io/Filme/" style="font-size: 16px; background: var(--primary-color); padding: 8px 15px; border-radius: 20px; transition: opacity 0.3s; color: #ffffff; text-decoration: none; font-weight: bold;">FilmFrei</a>
+            </div>
+            <input type="text" id="searchBar" placeholder="Serie suchen...">
         </div>
-        <input type="text" id="searchBar" placeholder="Film suchen...">
-    </div>
-</header>
+    </header>
     
     <div class="container">
         <div class="series-grid" id="seriesGrid"></div>
@@ -232,27 +247,45 @@
         let currentSeries = null;
         let currentSeason = null;
         let currentEpisode = null;
-        const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/main/Serien.ffcat';
+        const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/serien.json';
 
         async function loadCatalog(url) {
             try {
                 const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 catalog = await response.json();
+                if (!catalog || !catalog.series) {
+                    throw new Error('Invalid catalog format');
+                }
                 renderSeries(catalog.series);
             } catch (error) {
                 console.error('Fehler beim Laden des Katalogs:', error);
-                alert('Fehler beim Laden des Katalogs. Bitte versuchen Sie es später erneut.');
+                document.getElementById('seriesGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 20px;">
+                        Fehler beim Laden des Katalogs. Bitte versuchen Sie es später erneut.
+                    </div>
+                `;
             }
         }
 
         function renderSeries(series) {
             const seriesGrid = document.getElementById('seriesGrid');
             seriesGrid.innerHTML = '';
+            if (series.length === 0) {
+                seriesGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 20px;">
+                        Keine Serien gefunden.
+                    </div>
+                `;
+                return;
+            }
             series.forEach(serie => {
                 const card = document.createElement('div');
                 card.className = 'series-card';
                 card.innerHTML = `
-                    <img src="${serie.poster}" alt="${serie.title}" loading="lazy">
+                    <img src="${serie.poster}" alt="${serie.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450?text=Bild+nicht+verfügbar'">
                     <div class="series-info">
                         <h3 class="series-title">${serie.title}</h3>
                         <p class="series-year">${serie.year || 'Jahr unbekannt'}</p>
@@ -269,19 +302,19 @@
             const seasonSelect = document.getElementById('seasonSelect');
             const episodeSelect = document.getElementById('episodeSelect');
             
-            // Staffeln laden
             seasonSelect.innerHTML = '';
-            serie.seasons.forEach((season, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `Staffel ${season.number}`;
-                seasonSelect.appendChild(option);
-            });
-
-            // Erste Staffel automatisch laden
-            loadEpisodes(0);
-            
-            selector.style.display = 'block';
+            if (serie.seasons && serie.seasons.length > 0) {
+                serie.seasons.forEach((season, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `Staffel ${season.number}`;
+                    seasonSelect.appendChild(option);
+                });
+                loadEpisodes(0);
+                selector.style.display = 'block';
+            } else {
+                alert('Keine Staffeln verfügbar für diese Serie.');
+            }
         }
 
         function loadEpisodes(seasonIndex) {
@@ -290,17 +323,25 @@
             const season = currentSeries.seasons[seasonIndex];
             
             episodeSelect.innerHTML = '';
-            season.episodes.forEach((episode, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `Folge ${episode.number}: ${episode.title}`;
-                episodeSelect.appendChild(option);
-            });
+            if (season.episodes && season.episodes.length > 0) {
+                season.episodes.forEach((episode, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `Folge ${episode.number}: ${episode.title}`;
+                    episodeSelect.appendChild(option);
+                });
+            } else {
+                episodeSelect.innerHTML = '<option value="">Keine Folgen verfügbar</option>';
+            }
         }
 
         function playEpisode() {
             const seasonIndex = document.getElementById('seasonSelect').value;
             const episodeIndex = document.getElementById('episodeSelect').value;
+            if (!currentSeries.seasons[seasonIndex].episodes[episodeIndex]) {
+                alert('Fehler: Episode nicht verfügbar');
+                return;
+            }
             const episode = currentSeries.seasons[seasonIndex].episodes[episodeIndex];
             
             document.getElementById('episodeSelector').style.display = 'none';
@@ -311,25 +352,48 @@
             const episodeId = `${currentSeries.id}_s${seasonIndex + 1}e${episodeIndex + 1}`;
             const savedTime = localStorage.getItem(`seriesProgress_${episodeId}`);
 
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(episode.streamUrl);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            try {
+                if (Hls.isSupported()) {
+                    const hls = new Hls({
+                        debug: false,
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                        backBufferLength: 90
+                    });
+                    hls.loadSource(episode.streamUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        if (savedTime) {
+                            video.currentTime = parseFloat(savedTime);
+                        }
+                        video.play().catch(function(error) {
+                            console.log("Playback failed:", error);
+                        });
+                    });
+
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            console.error('HLS error:', data);
+                            alert('Fehler beim Laden des Videos. Bitte versuchen Sie es später erneut.');
+                        }
+                    });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = episode.streamUrl;
                     if (savedTime) {
                         video.currentTime = parseFloat(savedTime);
                     }
-                    video.play();
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = episode.streamUrl;
-                if (savedTime) {
-                    video.currentTime = parseFloat(savedTime);
+                    video.play().catch(function(error) {
+                        console.log("Playback failed:", error);
+                        alert('Fehler beim Abspielen des Videos.');
+                    });
+                } else {
+                    alert('Ihr Browser unterstützt das Videoformat nicht.');
                 }
-                video.play();
+            } catch (error) {
+                console.error('Playback error:', error);
+                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
             }
 
-            // Wiedergabefortschritt speichern
             video.addEventListener('timeupdate', function() {
                 localStorage.setItem(`seriesProgress_${episodeId}`, video.currentTime);
             });
@@ -355,6 +419,8 @@
 
         function searchSeries() {
             const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            if (!catalog || !catalog.series) return;
+            
             const filteredSeries = catalog.series.filter(series => 
                 series.title.toLowerCase().includes(searchTerm)
             );
@@ -376,15 +442,10 @@
             }, false);
         }
 
-        // Seite neu laden, wenn sie aus dem Hintergrund kommt (iOS)
-        document.addEventListener("visibilitychange", function() {
-            if (!document.hidden) {
-                window.location.reload();
-            }
+        // Start der Anwendung
+        window.addEventListener('load', function() {
+            loadCatalog(defaultCatalogUrl);
         });
-
-        // Beim Start der Seite
-        loadCatalog(defaultCatalogUrl);
     </script>
 </body>
 </html>
