@@ -6,15 +6,12 @@
     <title>SerienFrei Beta</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Standard Favicon -->
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png" type="image/x-icon">
     
-    <!-- iOS Web App meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SerienFrei Beta">
     
-    <!-- iOS Web App icon -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png">
     
     <style>
@@ -114,6 +111,8 @@
             width: 100%;
             height: auto;
             display: block;
+            aspect-ratio: 2/3;
+            object-fit: cover;
         }
         
         .series-info {
@@ -123,6 +122,7 @@
         .series-title {
             font-size: 18px;
             margin-bottom: 5px;
+            color: var(--text-color);
         }
         
         .series-year {
@@ -144,6 +144,7 @@
             width: 400px;
             max-height: 80vh;
             overflow-y: auto;
+            color: var(--text-color);
         }
         
         .season-select, .episode-select {
@@ -193,6 +194,7 @@
             color: #fff;
             font-size: 24px;
             cursor: pointer;
+            padding: 5px;
         }
         
         @media (max-width: 768px) {
@@ -241,7 +243,7 @@
         <button id="closePlayer"><i class="fas fa-times"></i></button>
         <video id="videoPlayer" controls></video>
     </div>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
         let catalog = null;
         let currentSeries = null;
@@ -256,15 +258,12 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 catalog = await response.json();
-                if (!Array.isArray(catalog)) {
-                    throw new Error('Invalid catalog format');
-                }
                 renderSeries(catalog);
             } catch (error) {
                 console.error('Fehler beim Laden des Katalogs:', error);
                 document.getElementById('seriesGrid').innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 20px;">
-                        Fehler beim Laden des Katalogs. Bitte versuchen Sie es später erneut.
+                    <div style="grid-column: 1/-1; text-align: center; padding: 20px; color: white;">
+                        Fehler beim Laden der Serien. Bitte versuchen Sie es später erneut.
                     </div>
                 `;
             }
@@ -273,14 +272,7 @@
         function renderSeries(series) {
             const seriesGrid = document.getElementById('seriesGrid');
             seriesGrid.innerHTML = '';
-            if (series.length === 0) {
-                seriesGrid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 20px;">
-                        Keine Serien gefunden.
-                    </div>
-                `;
-                return;
-            }
+
             series.forEach(serie => {
                 const card = document.createElement('div');
                 card.className = 'series-card';
@@ -303,18 +295,15 @@
             const episodeSelect = document.getElementById('episodeSelect');
             
             seasonSelect.innerHTML = '';
-            if (serie.seasons && serie.seasons.length > 0) {
-                serie.seasons.forEach((season, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = `Staffel ${season.number}`;
-                    seasonSelect.appendChild(option);
-                });
-                loadEpisodes(0);
-                selector.style.display = 'block';
-            } else {
-                alert('Keine Staffeln verfügbar für diese Serie.');
-            }
+            serie.seasons.forEach((season, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `Staffel ${season.number}`;
+                seasonSelect.appendChild(option);
+            });
+
+            loadEpisodes(0);
+            selector.style.display = 'block';
         }
 
         function loadEpisodes(seasonIndex) {
@@ -323,28 +312,26 @@
             const season = currentSeries.seasons[seasonIndex];
             
             episodeSelect.innerHTML = '';
-            if (season.episodes && season.episodes.length > 0) {
-                season.episodes.forEach((episode, index) => {
-                    if (episode.streamUrl && episode.streamUrl !== '.') {
-                        const option = document.createElement('option');
-                        option.value = index;
-                        option.textContent = `Folge ${episode.number}: ${episode.title}`;
-                        episodeSelect.appendChild(option);
-                    }
-                });
-                if (episodeSelect.options.length === 0) {
-                    episodeSelect.innerHTML = '<option value="">Keine verfügbaren Folgen</option>';
+            season.episodes.forEach((episode, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                let title = `Folge ${episode.number}: ${episode.title}`;
+                if (episode.streamUrl === '.' || !episode.streamUrl) {
+                    title += ' [BALD]';
+                    option.disabled = true;
                 }
-            }
+                option.textContent = title;
+                episodeSelect.appendChild(option);
+            });
         }
 
         function playEpisode() {
             const seasonIndex = document.getElementById('seasonSelect').value;
             const episodeIndex = document.getElementById('episodeSelect').value;
             const episode = currentSeries.seasons[seasonIndex].episodes[episodeIndex];
-
-            if (!episode || !episode.streamUrl || episode.streamUrl === '.') {
-                alert('Diese Episode ist momentan nicht verfügbar.');
+            
+            if (episode.streamUrl === '.' || !episode.streamUrl) {
+                alert('Diese Episode ist noch nicht verfügbar.');
                 return;
             }
 
@@ -354,25 +341,38 @@
             
             player.style.display = 'block';
             video.src = episode.streamUrl;
-            video.play().catch(function(error) {
-                console.error('Playback error:', error);
-                alert('Fehler beim Abspielen des Videos.');
-            });
 
-            // Speichere Wiedergabeposition
             const episodeId = `${currentSeries.id}_s${seasonIndex + 1}e${episodeIndex + 1}`;
-            video.addEventListener('timeupdate', function() {
-                localStorage.setItem(`seriesProgress_${episodeId}`, video.currentTime);
+            const savedTime = localStorage.getItem(`seriesProgress_${episodeId}`);
+
+            video.addEventListener('loadedmetadata', function() {
+                if (savedTime) {
+                    video.currentTime = parseFloat(savedTime);
+                }
+                video.play().catch(function(error) {
+                    console.error('Playback error:', error);
+                    alert('Fehler beim Abspielen des Videos.');
+                });
             });
 
-            // Lade gespeicherte Position
-            const savedTime = localStorage.getItem(`seriesProgress_${episodeId}`);
-            if (savedTime) {
-                video.currentTime = parseFloat(savedTime);
-            }
+            video.addEventListener('error', function() {
+                alert('Fehler beim Laden des Videos. Bitte versuchen Sie es später erneut.');
+                player.style.display = 'none';
+            });
+
+            // Speichere Fortschritt alle 5 Sekunden
+            let progressInterval = setInterval(() => {
+                if (video.currentTime > 0) {
+                    localStorage.setItem(`seriesProgress_${episodeId}`, video.currentTime);
+                }
+            }, 5000);
+
+            video.addEventListener('ended', () => {
+                clearInterval(progressInterval);
+                localStorage.removeItem(`seriesProgress_${episodeId}`);
+            });
         }
 
-        // Event Listeners
         document.getElementById('seasonSelect').addEventListener('change', function(e) {
             loadEpisodes(parseInt(e.target.value));
         });
@@ -406,7 +406,14 @@
             loadCatalog(defaultCatalogUrl);
         });
 
-        // Start der Anwendung
+        // Seite neu laden bei iOS im Hintergrund
+        document.addEventListener("visibilitychange", function() {
+            if (!document.hidden) {
+                window.location.reload();
+            }
+        });
+
+        // Start der App
         loadCatalog(defaultCatalogUrl);
     </script>
 </body>
