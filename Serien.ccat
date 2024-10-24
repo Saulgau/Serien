@@ -1,0 +1,119 @@
+{
+    "series": [
+        {
+            "id": "nightwatch",
+            "title": "Nachtwächter: Die dunkle Stunde",
+            "year": "2024",
+            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/nightwatch.jpg",
+            "seasons": [
+                {
+                    "number": 1,
+                    "episodes": [
+                        {
+                            "number": 1,
+                            "title": "Die erste Wache",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=nightwatch&e=s01e01"
+                        },
+                        {
+                            "number": 2,
+                            "title": "Schatten der Vergangenheit",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=nightwatch&e=s01e02"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "cyberforce",
+            "title": "CyberForce 2100",
+            "year": "2023",
+            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/cyberforce.jpg",
+            "seasons": [
+                {
+                    "number": 1,
+                    "episodes": [
+                        {
+                            "number": 1,
+                            "title": "Der digitale Sturm",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=cyberforce&e=s01e01"
+                        },
+                        {
+                            "number": 2,
+                            "title": "Netzwerk des Chaos",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=cyberforce&e=s01e02"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "zeitspringer",
+            "title": "Die Zeitspringer",
+            "year": "2024",
+            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/zeitspringer.jpg",
+            "seasons": [
+                {
+                    "number": 1,
+                    "episodes": [
+                        {
+                            "number": 1,
+                            "title": "Der erste Sprung",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=zeitspringer&e=s01e01"
+                        },
+                        {
+                            "number": 2,
+                            "title": "Zeitparadox",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=zeitspringer&e=s01e02"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "magieakademie",
+            "title": "Magie Akademie: Die Erweckung",
+            "year": "2023",
+            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/magieakademie.jpg",
+            "seasons": [
+                {
+                    "number": 1,
+                    "episodes": [
+                        {
+                            "number": 1,
+                            "title": "Der erste Zauber",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=magieakademie&e=s01e01"
+                        },
+                        {
+                            "number": 2,
+                            "title": "Verbotene Künste",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=magieakademie&e=s01e02"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "weltenretter",
+            "title": "Die Weltenretter",
+            "year": "2024",
+            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/weltenretter.jpg",
+            "seasons": [
+                {
+                    "number": 1,
+                    "episodes": [
+                        {
+                            "number": 1,
+                            "title": "Neue Dimensionen",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=weltenretter&e=s01e01"
+                        },
+                        {
+                            "number": 2,
+                            "title": "Das Paralleluniversum",
+                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=weltenretter&e=s01e02"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
