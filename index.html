@@ -13,47 +13,47 @@
             --text-color: #ffffff;
             --card-background: rgba(255, 255, 255, 0.1);
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         header {
             background-color: rgba(20, 20, 20, 0.8);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
-        
+
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
         }
-        
+
         .logo {
             font-size: 24px;
             font-weight: bold;
             color: var(--primary-color);
             text-decoration: none;
         }
-        
+
         #searchBar {
             flex-grow: 1;
             margin: 0 20px;
@@ -64,38 +64,65 @@
             color: var(--text-color);
             font-size: 16px;
         }
-        
+
         .series-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             padding-top: 20px;
         }
-        
-        .series-card {
+
+        .film-card {
             background-color: var(--card-background);
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
         }
-        
-        .series-card img {
+
+        .film-card img {
             width: 100%;
             height: auto;
         }
-        
-        .series-info {
+
+        .film-info {
             padding: 15px;
         }
-        
-        .series-title {
+
+        .film-title {
             font-size: 18px;
             margin-bottom: 5px;
         }
-        
-        .series-year {
+
+        .film-year {
             font-size: 14px;
             color: rgba(255,255,255,0.7);
+        }
+
+        /* Video player styles */
+        #player {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        #videoPlayer {
+            width: 80%;
+            height: auto;
+        }
+
+        #closePlayer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -111,6 +138,12 @@
 
 <div class="container">
     <div class="series-grid" id="seriesGrid"></div>
+</div>
+
+<!-- Video Player -->
+<div id="player">
+    <span id="closePlayer">✖</span>
+    <video id="videoPlayer" controls></video>
 </div>
 
 <script>
@@ -130,7 +163,7 @@
     }
 
     function renderSeries(series) {
-        const filmGrid = document.getElementById('filmGrid');
+        const filmGrid = document.getElementById('seriesGrid');
         filmGrid.innerHTML = '';
         series.forEach(serie => {
             const card = document.createElement('div');
@@ -148,7 +181,7 @@
     }
 
     function showSeasons(serie) {
-        const filmGrid = document.getElementById('filmGrid');
+        const filmGrid = document.getElementById('seriesGrid');
         filmGrid.innerHTML = `<h2>${serie.title}</h2>`;
         
         serie.seasons.forEach(season => {
@@ -170,7 +203,7 @@
         currentEpisode = streamUrl;
         const player = document.getElementById('player');
         const video = document.getElementById('videoPlayer');
-        player.style.display = 'block';
+        player.style.display = 'flex';
         video.src = streamUrl;
         video.play();
     }
