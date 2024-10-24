@@ -229,18 +229,18 @@
         let currentSeries = null;
         let currentSeason = null;
         let currentEpisode = null;
-        const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/main/Serien.catalog';
+        const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/refs/heads/main/Serien.json';
 
-        async function loadCatalog(url) {
-            try {
-                const response = await fetch(url);
-                catalog = await response.json();
-                renderSeries(catalog.series);
-            } catch (error) {
-                console.error('Fehler beim Laden des Katalogs:', error);
-                alert('Fehler beim Laden des Katalogs. Bitte versuchen Sie es später erneut.');
-            }
-        }
+async function loadCatalog(url) {
+    try {
+        const response = await fetch(url);
+        catalog = await response.json();
+        renderSeries(catalog.series);
+    } catch (error) {
+        console.error('Fehler beim Laden des Katalogs:', error);
+        alert('Fehler beim Laden des Katalogs. Bitte versuchen Sie es später erneut.');
+    }
+}
 
         function renderSeries(series) {
             const seriesGrid = document.getElementById('seriesGrid');
