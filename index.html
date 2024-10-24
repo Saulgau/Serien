@@ -241,13 +241,13 @@
         <button id="closePlayer"><i class="fas fa-times"></i></button>
         <video id="videoPlayer" controls></video>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
         let catalog = null;
         let currentSeries = null;
         let currentSeason = null;
         let currentEpisode = null;
-        const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/refs/heads/main/Serien.json';
+        const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/41b5fb2db418126d30d459915c397b0a75545f7a/Serien.json';
 
         async function loadCatalog(url) {
             try {
@@ -256,10 +256,10 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 catalog = await response.json();
-                if (!catalog || !catalog.series) {
+                if (!Array.isArray(catalog)) {
                     throw new Error('Invalid catalog format');
                 }
-                renderSeries(catalog.series);
+                renderSeries(catalog);
             } catch (error) {
                 console.error('Fehler beim Laden des Katalogs:', error);
                 document.getElementById('seriesGrid').innerHTML = `
@@ -325,80 +325,54 @@
             episodeSelect.innerHTML = '';
             if (season.episodes && season.episodes.length > 0) {
                 season.episodes.forEach((episode, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = `Folge ${episode.number}: ${episode.title}`;
-                    episodeSelect.appendChild(option);
+                    if (episode.streamUrl && episode.streamUrl !== '.') {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        option.textContent = `Folge ${episode.number}: ${episode.title}`;
+                        episodeSelect.appendChild(option);
+                    }
                 });
-            } else {
-                episodeSelect.innerHTML = '<option value="">Keine Folgen verfügbar</option>';
+                if (episodeSelect.options.length === 0) {
+                    episodeSelect.innerHTML = '<option value="">Keine verfügbaren Folgen</option>';
+                }
             }
         }
 
         function playEpisode() {
             const seasonIndex = document.getElementById('seasonSelect').value;
             const episodeIndex = document.getElementById('episodeSelect').value;
-            if (!currentSeries.seasons[seasonIndex].episodes[episodeIndex]) {
-                alert('Fehler: Episode nicht verfügbar');
+            const episode = currentSeries.seasons[seasonIndex].episodes[episodeIndex];
+
+            if (!episode || !episode.streamUrl || episode.streamUrl === '.') {
+                alert('Diese Episode ist momentan nicht verfügbar.');
                 return;
             }
-            const episode = currentSeries.seasons[seasonIndex].episodes[episodeIndex];
-            
+
             document.getElementById('episodeSelector').style.display = 'none';
             const player = document.getElementById('player');
             const video = document.getElementById('videoPlayer');
             
             player.style.display = 'block';
-            const episodeId = `${currentSeries.id}_s${seasonIndex + 1}e${episodeIndex + 1}`;
-            const savedTime = localStorage.getItem(`seriesProgress_${episodeId}`);
-
-            try {
-                if (Hls.isSupported()) {
-                    const hls = new Hls({
-                        debug: false,
-                        enableWorker: true,
-                        lowLatencyMode: true,
-                        backBufferLength: 90
-                    });
-                    hls.loadSource(episode.streamUrl);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                        if (savedTime) {
-                            video.currentTime = parseFloat(savedTime);
-                        }
-                        video.play().catch(function(error) {
-                            console.log("Playback failed:", error);
-                        });
-                    });
-
-                    hls.on(Hls.Events.ERROR, function(event, data) {
-                        if (data.fatal) {
-                            console.error('HLS error:', data);
-                            alert('Fehler beim Laden des Videos. Bitte versuchen Sie es später erneut.');
-                        }
-                    });
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = episode.streamUrl;
-                    if (savedTime) {
-                        video.currentTime = parseFloat(savedTime);
-                    }
-                    video.play().catch(function(error) {
-                        console.log("Playback failed:", error);
-                        alert('Fehler beim Abspielen des Videos.');
-                    });
-                } else {
-                    alert('Ihr Browser unterstützt das Videoformat nicht.');
-                }
-            } catch (error) {
+            video.src = episode.streamUrl;
+            video.play().catch(function(error) {
                 console.error('Playback error:', error);
-                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
-            }
+                alert('Fehler beim Abspielen des Videos.');
+            });
 
+            // Speichere Wiedergabeposition
+            const episodeId = `${currentSeries.id}_s${seasonIndex + 1}e${episodeIndex + 1}`;
             video.addEventListener('timeupdate', function() {
                 localStorage.setItem(`seriesProgress_${episodeId}`, video.currentTime);
             });
+
+            // Lade gespeicherte Position
+            const savedTime = localStorage.getItem(`seriesProgress_${episodeId}`);
+            if (savedTime) {
+                video.currentTime = parseFloat(savedTime);
+            }
         }
 
+        // Event Listeners
         document.getElementById('seasonSelect').addEventListener('change', function(e) {
             loadEpisodes(parseInt(e.target.value));
         });
@@ -419,9 +393,9 @@
 
         function searchSeries() {
             const searchTerm = document.getElementById('searchBar').value.toLowerCase();
-            if (!catalog || !catalog.series) return;
+            if (!catalog) return;
             
-            const filteredSeries = catalog.series.filter(series => 
+            const filteredSeries = catalog.filter(series => 
                 series.title.toLowerCase().includes(searchTerm)
             );
             renderSeries(filteredSeries);
@@ -432,20 +406,8 @@
             loadCatalog(defaultCatalogUrl);
         });
 
-        // iOS-spezifische Anpassungen
-        if (("standalone" in window.navigator) && window.navigator.standalone) {
-            document.addEventListener('click', function(event) {
-                if (event.target.tagName === 'A' && event.target.getAttribute('href')) {
-                    event.preventDefault();
-                    window.location = event.target.getAttribute('href');
-                }
-            }, false);
-        }
-
         // Start der Anwendung
-        window.addEventListener('load', function() {
-            loadCatalog(defaultCatalogUrl);
-        });
+        loadCatalog(defaultCatalogUrl);
     </script>
 </body>
 </html>
