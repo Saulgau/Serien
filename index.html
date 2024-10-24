@@ -120,6 +120,8 @@
         #videoPlayer {
             width: 80%;
             height: auto;
+            border: none;
+            border-radius: 10px;
         }
 
         #closePlayer {
@@ -128,6 +130,7 @@
             right: 20px;
             color: white;
             cursor: pointer;
+            font-size: 24px;
         }
 
         .season-container {
@@ -147,10 +150,17 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .episode-button:hover {
             background-color: #d00412;
+        }
+
+        .series-image {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -210,7 +220,10 @@
 
     function showSeasons(serie) {
         const seriesGrid = document.getElementById('seriesGrid');
-        seriesGrid.innerHTML = `<h2>${serie.title}</h2>`;
+        seriesGrid.innerHTML = `
+            <h2>${serie.title}</h2>
+            <img class="series-image" src="${serie.poster}" alt="${serie.title}">
+        `;
         
         serie.seasons.forEach(season => {
             const seasonDiv = document.createElement('div');
