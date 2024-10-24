@@ -77,6 +77,11 @@
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .film-card:hover {
+            transform: scale(1.05);
         }
 
         .film-card img {
@@ -124,6 +129,29 @@
             color: white;
             cursor: pointer;
         }
+
+        .season-container {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .episode-button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: #fff;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .episode-button:hover {
+            background-color: #d00412;
+        }
     </style>
 </head>
 <body>
@@ -163,8 +191,8 @@
     }
 
     function renderSeries(series) {
-        const filmGrid = document.getElementById('seriesGrid');
-        filmGrid.innerHTML = '';
+        const seriesGrid = document.getElementById('seriesGrid');
+        seriesGrid.innerHTML = '';
         series.forEach(serie => {
             const card = document.createElement('div');
             card.className = 'film-card';
@@ -176,26 +204,26 @@
                 </div>
             `;
             card.addEventListener('click', () => showSeasons(serie));
-            filmGrid.appendChild(card);
+            seriesGrid.appendChild(card);
         });
     }
 
     function showSeasons(serie) {
-        const filmGrid = document.getElementById('seriesGrid');
-        filmGrid.innerHTML = `<h2>${serie.title}</h2>`;
+        const seriesGrid = document.getElementById('seriesGrid');
+        seriesGrid.innerHTML = `<h2>${serie.title}</h2>`;
         
         serie.seasons.forEach(season => {
             const seasonDiv = document.createElement('div');
+            seasonDiv.className = 'season-container';
             seasonDiv.innerHTML = `<h4>Staffel ${season.number}</h4>`;
             season.episodes.forEach(episode => {
-                const episodeDiv = document.createElement('div');
-                episodeDiv.innerHTML = `
-                    <p>Folge ${episode.number}: ${episode.title}</p>
-                    <button onclick="playEpisode('${episode.streamUrl}')">Jetzt ansehen</button>
-                `;
-                seasonDiv.appendChild(episodeDiv);
+                const episodeButton = document.createElement('button');
+                episodeButton.className = 'episode-button';
+                episodeButton.innerHTML = `Folge ${episode.number}: ${episode.title}`;
+                episodeButton.onclick = () => playEpisode(episode.streamUrl);
+                seasonDiv.appendChild(episodeButton);
             });
-            filmGrid.appendChild(seasonDiv);
+            seriesGrid.appendChild(seasonDiv);
         });
     }
 
