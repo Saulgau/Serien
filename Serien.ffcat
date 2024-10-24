@@ -1,119 +1,93 @@
 {
-    "series": [
+  "id": "1",
+  "title": "Tulsa King",
+  "year": "2022",
+  "poster": "https://cdn.moviepilot.de/files/91bed7e9b08bd8c230dbd59452d5be4ea6cd94c8ef007895a683ae7e7d61/copyright/tulsa_king_ver12_xlg.jpg",
+  "seasons": [
+    {
+      "number": 1,
+      "episodes": [
         {
-            "id": "nightwatch",
-            "title": "Nachtwächter: Die dunkle Stunde",
-            "year": "2024",
-            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/nightwatch.jpg",
-            "seasons": [
-                {
-                    "number": 1,
-                    "episodes": [
-                        {
-                            "number": 1,
-                            "title": "Die erste Wache",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=nightwatch&e=s01e01"
-                        },
-                        {
-                            "number": 2,
-                            "title": "Schatten der Vergangenheit",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=nightwatch&e=s01e02"
-                        }
-                    ]
-                }
-            ]
+          "number": 1,
+          "title": "Nach Westen, alter Mann",
+          "streamUrl": "https://str32.vidoza.net/nvl4c3ton4feieno3x6qlx5dmpktqki4sopyltmaeda2fbftdfhpftnw6ltq/v.mp4"
         },
         {
-            "id": "cyberforce",
-            "title": "CyberForce 2100",
-            "year": "2023",
-            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/cyberforce.jpg",
-            "seasons": [
-                {
-                    "number": 1,
-                    "episodes": [
-                        {
-                            "number": 1,
-                            "title": "Der digitale Sturm",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=cyberforce&e=s01e01"
-                        },
-                        {
-                            "number": 2,
-                            "title": "Netzwerk des Chaos",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=cyberforce&e=s01e02"
-                        }
-                    ]
-                }
-            ]
+          "number": 2,
+          "title": "Mittelpunkt des Universums",
+          "streamUrl": "https://str27.vidoza.net/nvl4c33on4feieno3x6qlch4ntv63f3ift4kczovter6iyvcyidz7hjuayoq/v.mp4"
         },
         {
-            "id": "zeitspringer",
-            "title": "Die Zeitspringer",
-            "year": "2024",
-            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/zeitspringer.jpg",
-            "seasons": [
-                {
-                    "number": 1,
-                    "episodes": [
-                        {
-                            "number": 1,
-                            "title": "Der erste Sprung",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=zeitspringer&e=s01e01"
-                        },
-                        {
-                            "number": 2,
-                            "title": "Zeitparadox",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=zeitspringer&e=s01e02"
-                        }
-                    ]
-                }
-            ]
+          "number": 3,
+          "title": "Willkür BALD",
+          "streamUrl": "."
         },
         {
-            "id": "magieakademie",
-            "title": "Magie Akademie: Die Erweckung",
-            "year": "2023",
-            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/magieakademie.jpg",
-            "seasons": [
-                {
-                    "number": 1,
-                    "episodes": [
-                        {
-                            "number": 1,
-                            "title": "Der erste Zauber",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=magieakademie&e=s01e01"
-                        },
-                        {
-                            "number": 2,
-                            "title": "Verbotene Künste",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=magieakademie&e=s01e02"
-                        }
-                    ]
-                }
-            ]
+          "number": 4,
+          "title": "Besuchsort BALD",
+          "streamUrl": "."
         },
         {
-            "id": "weltenretter",
-            "title": "Die Weltenretter",
-            "year": "2024",
-            "poster": "https://raw.githubusercontent.com/Saulgau/SerienFrei-Beta/main/posters/weltenretter.jpg",
-            "seasons": [
-                {
-                    "number": 1,
-                    "episodes": [
-                        {
-                            "number": 1,
-                            "title": "Neue Dimensionen",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=weltenretter&e=s01e01"
-                        },
-                        {
-                            "number": 2,
-                            "title": "Das Paralleluniversum",
-                            "streamUrl": "https://raidrush.net/stream/embedplayer_hq.php?s=weltenretter&e=s01e02"
-                        }
-                    ]
-                }
-            ]
+          "number": 5,
+          "title": "Maut-Joe",
+          "streamUrl": "https://str30.vidoza.net/nvl4dtykn4feieno3x7alefxoyotpa5zbgrscwwcsft526yocfd64f7xzgsa/v.mp4"
+        },
+        {
+          "number": 6,
+          "title": "Stallgeruch BALD",
+          "streamUrl": "."
+        },
+        {
+          "number": 7,
+          "title": "Verscharrt BALD",
+          "streamUrl": "."
+        },
+        {
+          "number": 8,
+          "title": "Lehmwände BALD",
+          "streamUrl": "."
+        },
+        {
+          "number": 9,
+          "title": "Gute Reise BALD",
+          "streamUrl": "."
         }
-    ]
+      ]
+    },
+    {
+      "number": 2,
+      "episodes": [
+        {
+          "number": 1,
+          "title": "Wieder im Sattel BALD",
+          "streamUrl": "."
+        },
+        {
+          "number": 2,
+          "title": "Kansas City Blues",
+          "streamUrl": "https://str36.vidoza.net/nvl4jcihn4feieno3x7qlevzmeqgdij3f7w35vrhqvl7gjk2xkp65hqjn3cq/v.mp4"
+        },
+        {
+          "number": 3,
+          "title": "Oklahoma gegen Manfredi",
+          "streamUrl": "https://str27.vidoza.net/nvl4jcqhn4feieno3x7qlcfjnjio7r3p5eevmtgn3fmxjvbsiai7gblhzs3a/v.mp4"
+        },
+        {
+          "number": 4,
+          "title": "Helden und Schurken",
+          "streamUrl": "https://cache67.vidoza.net/nvl4dqqkn4feieno3x7aldp4nq3aqrlwswyvtbssounkgqumd7swj2c5qg6a/v.mp4"
+        },
+        {
+          "number": 5,
+          "title": "Kampf gegen Windmühlen",
+          "streamUrl": "https://cache77.vidoza.net/nvl4drykn4feieno3x7albngphs7xj3thggkfs2wjpuevu64ghmtixvvaldq/v.mp4"
+        },
+        {
+          "number": 6,
+          "title": "Navigator",
+          "streamUrl": "https://cache74.vidoza.net/nvl4ciqln4feieno3x7qlbvznrwocn55vva6qmczzl6pn3fuihx5gsu7tpga/v.mp4"
+        }
+      ]
+    }
+  ]
 }
