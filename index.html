@@ -3,17 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SerienFrei Beta</title>
+    <title>SerienFrei</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png" type="image/x-icon">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SerienFrei Beta">
-    
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png">
-    
     <style>
         :root {
             --primary-color: #e50914;
@@ -28,12 +20,8 @@
             padding: 0;
         }
         
-        html {
-            -webkit-text-size-adjust: 100%;
-        }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
@@ -50,8 +38,6 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
         
         .header-content {
@@ -59,8 +45,6 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
         }
         
         .logo {
@@ -76,15 +60,9 @@
             padding: 10px 15px;
             border: none;
             border-radius: 20px;
-            background-color: rgba(255,255,255,0.2);
+            background-color: rgba(255, 255, 255, 0.2);
             color: var(--text-color);
             font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-        
-        #searchBar:focus {
-            outline: none;
-            background-color: rgba(255,255,255,0.3);
         }
         
         .series-grid {
@@ -98,19 +76,12 @@
             background-color: var(--card-background);
             border-radius: 8px;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-        }
-        
-        .series-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
         
         .series-card img {
             width: 100%;
             height: auto;
-            display: block;
         }
         
         .series-info {
@@ -126,263 +97,67 @@
             font-size: 14px;
             color: rgba(255,255,255,0.7);
         }
-        
-        #episodeSelector {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(20, 20, 20, 0.95);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 2001;
-            display: none;
-            max-width: 90%;
-            width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .season-select, .episode-select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background: var(--card-background);
-            color: var(--text-color);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-        }
-        
-        #player {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 2000;
-            display: none;
-        }
-        
-        #videoPlayer {
-            width: 100%;
-            height: 100%;
-        }
-        
-        #closePlayer, #closeSelector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .logo {
-                margin-bottom: 10px;
-            }
-            
-            #searchBar {
-                margin: 10px 0;
-            }
-            
-            .series-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <a href="#" class="logo" id="refreshLink">SerienFrei Beta</a>
-            <input type="text" id="searchBar" placeholder="Serie suchen...">
+<header>
+    <div class="header-content">
+        <div>
+            <a href="#" class="logo">SerienFrei</a>
         </div>
-    </header>
-    
-    <div class="container">
-        <div class="series-grid" id="seriesGrid"></div>
+        <input type="text" id="searchBar" placeholder="Serie suchen...">
     </div>
-    
-    <div id="episodeSelector">
-        <button id="closeSelector"><i class="fas fa-times"></i></button>
-        <select class="season-select" id="seasonSelect"></select>
-        <select class="episode-select" id="episodeSelect"></select>
-        <button class="play-button" onclick="playEpisode()">Abspielen</button>
-    </div>
-    
-    <div id="player">
-        <button id="closePlayer"><i class="fas fa-times"></i></button>
-        <video id="videoPlayer" controls></video>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>
-        let catalog = null;
-        let currentSeries = null;
-        let currentSeason = null;
-        let currentEpisode = null;
-        const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/main/Serien.catalog';
+</header>
 
-        async function loadCatalog(url) {
-            try {
-                const response = await fetch(url);
-                catalog = await response.json();
-                renderSeries(catalog.series);
-            } catch (error) {
-                console.error('Fehler beim Laden des Katalogs:', error);
-                alert('Fehler beim Laden des Katalogs. Bitte versuchen Sie es später erneut.');
-            }
+<div class="container">
+    <div class="series-grid" id="seriesGrid"></div>
+</div>
+
+<script>
+    let catalog = null;
+    const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/main/catalog.json';
+
+    async function loadCatalog(url) {
+        try {
+            const response = await fetch(url);
+            catalog = await response.json();
+            renderSeries(catalog.series);
+        } catch (error) {
+            console.error('Fehler beim Laden des Katalogs:', error);
         }
+    }
 
-        function renderSeries(series) {
-            const seriesGrid = document.getElementById('seriesGrid');
-            seriesGrid.innerHTML = '';
-            series.forEach(serie => {
-                const card = document.createElement('div');
-                card.className = 'series-card';
-                card.innerHTML = `
-                    <img src="${serie.poster}" alt="${serie.title}" loading="lazy">
-                    <div class="series-info">
-                        <h3 class="series-title">${serie.title}</h3>
-                        <p class="series-year">${serie.year || 'Jahr unbekannt'}</p>
-                    </div>
-                `;
-                card.addEventListener('click', () => showEpisodeSelector(serie));
-                seriesGrid.appendChild(card);
-            });
-        }
-
-        function showEpisodeSelector(serie) {
-            currentSeries = serie;
-            const selector = document.getElementById('episodeSelector');
-            const seasonSelect = document.getElementById('seasonSelect');
-            const episodeSelect = document.getElementById('episodeSelect');
-            
-            // Staffeln laden
-            seasonSelect.innerHTML = '';
-            serie.seasons.forEach((season, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `Staffel ${season.number}`;
-                seasonSelect.appendChild(option);
-            });
-
-            // Erste Staffel automatisch laden
-            loadEpisodes(0);
-            
-            selector.style.display = 'block';
-        }
-
-        function loadEpisodes(seasonIndex) {
-            currentSeason = seasonIndex;
-            const episodeSelect = document.getElementById('episodeSelect');
-            const season = currentSeries.seasons[seasonIndex];
-            
-            episodeSelect.innerHTML = '';
-            season.episodes.forEach((episode, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `Folge ${episode.number}: ${episode.title}`;
-                episodeSelect.appendChild(option);
-            });
-        }
-
-        function playEpisode() {
-            const seasonIndex = document.getElementById('seasonSelect').value;
-            const episodeIndex = document.getElementById('episodeSelect').value;
-            const episode = currentSeries.seasons[seasonIndex].episodes[episodeIndex];
-            
-            document.getElementById('episodeSelector').style.display = 'none';
-            const player = document.getElementById('player');
-            const video = document.getElementById('videoPlayer');
-            
-            player.style.display = 'block';
-            const episodeId = `${currentSeries.id}_s${seasonIndex + 1}e${episodeIndex + 1}`;
-            const savedTime = localStorage.getItem(`seriesProgress_${episodeId}`);
-
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(episode.streamUrl);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    if (savedTime) {
-                        video.currentTime = parseFloat(savedTime);
-                    }
-                    video.play();
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = episode.streamUrl;
-                if (savedTime) {
-                    video.currentTime = parseFloat(savedTime);
-                }
-                video.play();
-            }
-
-            // Wiedergabefortschritt speichern
-            video.addEventListener('timeupdate', function() {
-                localStorage.setItem(`seriesProgress_${episodeId}`, video.currentTime);
-            });
-        }
-
-        document.getElementById('seasonSelect').addEventListener('change', function(e) {
-            loadEpisodes(parseInt(e.target.value));
+    function renderSeries(series) {
+        const seriesGrid = document.getElementById('seriesGrid');
+        seriesGrid.innerHTML = '';
+        series.forEach(show => {
+            const card = document.createElement('div');
+            card.className = 'series-card';
+            card.innerHTML = `
+                <img src="${show.poster}" alt="${show.title}">
+                <div class="series-info">
+                    <h3 class="series-title">${show.title}</h3>
+                    <p class="series-year">${show.year || 'Unbekanntes Jahr'}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => showSeasons(show));
+            seriesGrid.appendChild(card);
         });
+    }
 
-        document.getElementById('closeSelector').addEventListener('click', () => {
-            document.getElementById('episodeSelector').style.display = 'none';
-        });
+    function showSeasons(show) {
+        alert(`Staffeln von ${show.title}: ${show.seasons.join(', ')}`);
+    }
 
-        document.getElementById('closePlayer').addEventListener('click', () => {
-            const player = document.getElementById('player');
-            const video = document.getElementById('videoPlayer');
-            player.style.display = 'none';
-            video.pause();
-            video.src = '';
-        });
+    document.getElementById('searchBar').addEventListener('input', () => {
+        const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+        const filteredSeries = catalog.series.filter(show =>
+            show.title.toLowerCase().includes(searchTerm)
+        );
+        renderSeries(filteredSeries);
+    });
 
-        document.getElementById('searchBar').addEventListener('input', searchSeries);
-
-        function searchSeries() {
-            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
-            const filteredSeries = catalog.series.filter(series => 
-                series.title.toLowerCase().includes(searchTerm)
-            );
-            renderSeries(filteredSeries);
-        }
-
-        document.getElementById('refreshLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadCatalog(defaultCatalogUrl);
-        });
-
-        // iOS-spezifische Anpassungen
-        if (("standalone" in window.navigator) && window.navigator.standalone) {
-            document.addEventListener('click', function(event) {
-                if (event.target.tagName === 'A' && event.target.getAttribute('href')) {
-                    event.preventDefault();
-                    window.location = event.target.getAttribute('href');
-                }
-            }, false);
-        }
-
-        // Seite neu laden, wenn sie aus dem Hintergrund kommt (iOS)
-        document.addEventListener("visibilitychange", function() {
-            if (!document.hidden) {
-                window.location.reload();
-            }
-        });
-
-        // Beim Start der Seite
-        loadCatalog(defaultCatalogUrl);
-    </script>
+    loadCatalog(defaultCatalogUrl);
+</script>
 </body>
 </html>
