@@ -115,6 +115,7 @@
 
 <script>
     let catalog = null;
+    let currentEpisode = null;
     const defaultCatalogUrl = 'https://raw.githubusercontent.com/Saulgau/Serien/main/catalog.json';
 
     async function loadCatalog(url) {
@@ -124,38 +125,74 @@
             renderSeries(catalog.series);
         } catch (error) {
             console.error('Fehler beim Laden des Katalogs:', error);
+            alert('Fehler beim Laden des Katalogs. Bitte versuchen Sie es später erneut.');
         }
     }
 
     function renderSeries(series) {
-        const seriesGrid = document.getElementById('seriesGrid');
-        seriesGrid.innerHTML = '';
-        series.forEach(show => {
+        const filmGrid = document.getElementById('filmGrid');
+        filmGrid.innerHTML = '';
+        series.forEach(serie => {
             const card = document.createElement('div');
-            card.className = 'series-card';
+            card.className = 'film-card';
             card.innerHTML = `
-                <img src="${show.poster}" alt="${show.title}">
-                <div class="series-info">
-                    <h3 class="series-title">${show.title}</h3>
-                    <p class="series-year">${show.year || 'Unbekanntes Jahr'}</p>
+                <img src="${serie.poster}" alt="${serie.title}">
+                <div class="film-info">
+                    <h3 class="film-title">${serie.title}</h3>
+                    <p class="film-year">${serie.year || 'Unbekanntes Jahr'}</p>
                 </div>
             `;
-            card.addEventListener('click', () => showSeasons(show));
-            seriesGrid.appendChild(card);
+            card.addEventListener('click', () => showSeasons(serie));
+            filmGrid.appendChild(card);
         });
     }
 
-    function showSeasons(show) {
-        alert(`Staffeln von ${show.title}: ${show.seasons.join(', ')}`);
+    function showSeasons(serie) {
+        const filmGrid = document.getElementById('filmGrid');
+        filmGrid.innerHTML = `<h2>${serie.title}</h2>`;
+        
+        serie.seasons.forEach(season => {
+            const seasonDiv = document.createElement('div');
+            seasonDiv.innerHTML = `<h4>Staffel ${season.number}</h4>`;
+            season.episodes.forEach(episode => {
+                const episodeDiv = document.createElement('div');
+                episodeDiv.innerHTML = `
+                    <p>Folge ${episode.number}: ${episode.title}</p>
+                    <button onclick="playEpisode('${episode.streamUrl}')">Jetzt ansehen</button>
+                `;
+                seasonDiv.appendChild(episodeDiv);
+            });
+            filmGrid.appendChild(seasonDiv);
+        });
     }
 
-    document.getElementById('searchBar').addEventListener('input', () => {
+    function playEpisode(streamUrl) {
+        currentEpisode = streamUrl;
+        const player = document.getElementById('player');
+        const video = document.getElementById('videoPlayer');
+        player.style.display = 'block';
+        video.src = streamUrl;
+        video.play();
+    }
+
+    document.getElementById('closePlayer').addEventListener('click', () => {
+        const player = document.getElementById('player');
+        const video = document.getElementById('videoPlayer');
+        player.style.display = 'none';
+        video.pause();
+        video.src = '';
+        currentEpisode = null;
+    });
+
+    document.getElementById('searchBar').addEventListener('input', searchSeries);
+
+    function searchSeries() {
         const searchTerm = document.getElementById('searchBar').value.toLowerCase();
-        const filteredSeries = catalog.series.filter(show =>
-            show.title.toLowerCase().includes(searchTerm)
+        const filteredSeries = catalog.series.filter(serie => 
+            serie.title.toLowerCase().includes(searchTerm)
         );
         renderSeries(filteredSeries);
-    });
+    }
 
     loadCatalog(defaultCatalogUrl);
 </script>
